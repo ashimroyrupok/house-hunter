@@ -2,6 +2,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import UseAxiosPublic from "../../Hooks/UseAxiosPublic";
+import toast from "react-hot-toast";
 const Login = () => {
 
   const axiosPublic = UseAxiosPublic();
@@ -15,6 +16,8 @@ const Login = () => {
         const password = form.password.value;
         console.log(email, password);
 
+        const toastId = toast.loading("Login in...")
+
         const user = {email,password};
         const res = await axiosPublic.post("/login",user,{
           withCredentials:true
@@ -23,7 +26,15 @@ const Login = () => {
         if(res.data.success){
 
             navigate('/')
+           return  toast.success("login successfully", {id:toastId})
         }
+        if(!res.data.success){
+         return toast.error('check your email and password', {id:toastId})
+        }
+
+        toast.error('Register first')
+
+
 
 
     }

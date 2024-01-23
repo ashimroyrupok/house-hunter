@@ -1,11 +1,13 @@
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UseAxiosPublic from "../../Hooks/UseAxiosPublic";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
 
     const axiosPublic= UseAxiosPublic();
+    const navigate = useNavigate()
 
     const handleSignUp = async(e )=>{
         e.preventDefault();
@@ -18,11 +20,16 @@ const SignUp = () => {
         console.log(name,role,email,phone,password);
         const data = { name, role, email, phone, password };
 
-      const res=await  axiosPublic.post('/user', data)
+      const res = await axiosPublic.post("/signup", data);
       console.log(res.data);
       if(res.data.insertedId ){
         console.log("added successfully");
+        navigate('/login')
+       return toast.success("Sign up successfully")
+        
       }
+
+      toast.error('user already registered')
        
         
     }
