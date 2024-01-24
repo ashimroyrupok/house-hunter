@@ -9,7 +9,10 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        "https://65b006084d746017db34ceb9--moonlit-capybara-f3669a.netlify.app"
+    ],
     credentials: true
 }));
 app.use(cookieParser())
@@ -40,8 +43,44 @@ async function run() {
         await client.connect();
 
         const userCollection = client.db('houseHunterDB').collection('users')
+        const houseCollection = client.db('houseHunterDB').collection('houses')
 
+            
+  
 
+        app.post('/addHouse', async (req, res) => {
+            const data = req.body;
+            const token = req.cookies?.token;
+
+            try {
+                const findUser = await userCollection.findOne({ token: token });
+
+                if (!findUser) {
+                    res.status(401).send('Unauthorized');
+                    return;
+                }
+
+                const info = {
+                    image: data?.image,
+                    houseName: data?.houseName,
+                    city: data?.city,
+                    address: data?.address,
+                    roomSize: data?.roomSize,
+                    bedRooms: data?.bedRooms,
+                    bathRoom: data?.bathRoom,
+                    mobile: data?.mobile,
+                    price: data?.price,
+                    availability: data?.availability,
+                    email: findUser?.email
+                };
+
+                const result = await houseCollection.insertOne(info);
+                res.send(result);
+            } catch (error) {
+                console.error(error);
+                res.status(500).send('Internal Server Error');
+            }
+        });
 
         app.post('/logout', async (req, res) => {
             const user = req.body;
@@ -50,40 +89,56 @@ async function run() {
 
 
 
+
+        app.patch('/login/:email', async (req, res) => {
+            const email = req.params?.email;
+            const filter = { email: email };
+            const updateDoc = {
+                $set: {
+                    token: req.cookies?.token
+                }
+            }
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result);
+
+        })
+
         app.post('/login', async (req, res) => {
             try {
                 const check = await userCollection.findOne({ email: req.body.email });
+                console.log(req.cookies?.token);
+
                 if (!check) {
-                    res.send("user name not found")
+                    res.send("User not found");
+                    return;
                 }
+
                 const isPassword = await bcrypt.compare(req.body.password, check.password);
-                console.log(check.password, req.body.password);
-                console.log(isPassword);
+
                 if (isPassword) {
-                    // res.send('home')
-                    const token = jwt.sign({ userId: check._id }, process.env.JWT_TOKEN, { expiresIn: '1h' });
+                    const token = jwt.sign({ userId: check._id, userEmail: check.email }, process.env.JWT_TOKEN, { expiresIn: '1h' });
+
                     res.cookie("token", token, {
                         httpOnly: true,
                         secure: true,
                         sameSite: "none"
-                    }
-                    )
-                        .send({ success: true })
-                }
-                else {
-                    res.send('wrong password')
-                }
-            } catch {
+                    });
 
-                res.send("wrong ")
+                    res.send({ success: true });
+                } else {
+                    res.send({ success: false });
+                }
+            } catch (error) {
+                console.error(error);
+                res.status(500).send({ message: "Something went wrong" });
             }
-
-        })
-
+        });
 
 
 
-        app.post('/user', async (req, res) => {
+
+
+        app.post('/signup', async (req, res) => {
             const data = req.body;
             // console.log(data);
             // console.log(data.email,"email");
