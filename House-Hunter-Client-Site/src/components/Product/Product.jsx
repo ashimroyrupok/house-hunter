@@ -4,17 +4,13 @@ import { FaPlus } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
 import UseAxiosPublic from "../../Hooks/UseAxiosPublic";
 import Cards from "../../Cards/Cards";
+import { useState } from "react";
 
 const Product = () => {
   const axiosPublic = UseAxiosPublic();
+  const [searchValue, setSearchValue] = useState("");
 
-//   const { data = [], refetch: dataFetch } = useQuery({
-//     queryKey: [user?.email],
-//     queryFn: async () => {
-//       const res = await axiosPublic.get(`taskData/${user?.email}`);
-//       return res.data;
-//     },
-//   });
+
 
   //
 
@@ -28,6 +24,8 @@ const Product = () => {
             <form className="flex   mx-auto flex-col md:flex-row gap-3">
               <div className="flex">
                 <input
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  name="searchValue"
                   type="text"
                   placeholder="Search by House name"
                   className="w-full md:w-80 px-3 h-10 rounded-l border-2 border-sky-500 focus:outline-none focus:border-sky-500"
@@ -102,8 +100,7 @@ const Product = () => {
       </div>
 
       <div>
-      
-        <Cards></Cards>
+        <Cards searchValue={searchValue}></Cards>
       </div>
     </div>
   );

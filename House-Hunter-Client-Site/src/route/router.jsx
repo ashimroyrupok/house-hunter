@@ -10,32 +10,31 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout></MainLayout>,
-    children:[
-        {
-            path:'/',
-            element: <Home></Home>
-        },
-        {
-            path:"/login",
-            element: <Login></Login>
-        },
-        {
-            path:"/signUp",
-            element: <SignUp></SignUp>
-        },
-        {
-          path:"/dashboard",
-          element: <Dashboard></Dashboard>,
-          children:[
-            {
-              path:"/dashboard/addHouse",
-              element: <AddHouse></AddHouse>
-            }
-          ]
-        }
-
-
-    ]
+    children: [
+      {
+        path: "/",
+        element: <Home></Home>,
+        // loader: () => fetch("https://house-hunter-server-site.vercel.app"),
+      },
+      {
+        path: "/login",
+        element: <Login></Login>,
+      },
+      {
+        path: "/signUp",
+        element: <SignUp></SignUp>,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard></Dashboard>,
+        children: [
+          {
+            path: "/dashboard/addHouse",
+            element: <AddHouse></AddHouse>,
+          },
+        ],
+      },
+    ],
   },
 ]);
 

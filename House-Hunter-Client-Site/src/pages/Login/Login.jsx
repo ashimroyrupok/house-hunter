@@ -25,6 +25,10 @@ const Login = () => {
         console.log(res.data.success);
         if(res.data.success){
 
+
+          const result = await axiosPublic.patch(`login/${email}`,)
+          console.log(result.data);
+
             navigate('/')
            return  toast.success("login successfully", {id:toastId})
         }

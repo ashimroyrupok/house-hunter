@@ -25,6 +25,9 @@ const Navbar = () => {
       <Link to="/services" className="lg:ml-4">
         Services
       </Link>
+      <Link to="/dashboard" className="lg:ml-4">
+        Dashboard
+      </Link>
     </>
   );
 
